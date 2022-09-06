@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>total todos : <span id="totalCounter"> </span></h1>
+    <h2>todos done : <span id="doneCounter"> </span></h2>
+    <input type="text" name="todo" value="" />
+    <button>ajouter</button>
+    <ul></ul>
+  </body>
+  <script>
+    const listeHTML = document.querySelector("ul");
+    const addButton = document.querySelector("button");
+    const inputTodo = document.querySelector("input");
+    const totalCounter = document.querySelector("#totalCounter");
+    const doneCounter = document.querySelector("#doneCounter");
+    // kif nenzel al button ykharali alert ("rak nzelt")
+    let totalTodos = 0;
+    let counterAdd = 0;
+
+    addButton.onclick = () => {
+      addTodo(inputTodo.value,true);
+    };
+    inputTodo.onkeydown = (e) => {
+      if (e.key == "Enter") {
+        addTodo(inputTodo.value,true);
+      }
+    };
+    document
+      .querySelectorAll("*")
+      .forEach((el) => el.addEventListener("mouseover", (e) => {}));
+
+    const addTodo = (inputValue,firstTime) => {
+
+      if (!inputValue.length) {
+        alert("element feregh");
+        return false;
+      }
+      let li = document.createElement("li");
+      let checkbox = document.createElement("input");
+      checkbox.setAttribute("type", "checkbox");
+      checkbox.addEventListener("click",etatTodo)
+
+      let input = document.createElement("input");
+      input.setAttribute("value", inputValue);
+      input.setAttribute("readOnly","true")
+      input.classList.add("inputTodo");
+      input.style.border="none"
+
+      let saveButton = document.createElement("button");
+      saveButton.innerText = "edit";
+      saveButton.setAttribute('id','edit');
+      saveButton.addEventListener("click", editTodo);
+
+      let deleteButton = document.createElement("button");
+      deleteButton.innerText = "delete";
+      deleteButton.setAttribute('id','delete');
+      deleteButton.addEventListener("click", deleteTodo);
+
+      li.appendChild(checkbox);
+      li.appendChild(input);
+      li.appendChild(saveButton);
+      li.appendChild(deleteButton);
+      if(firstTime)
+        addInLocalStorage();
+      inputTodo.value = "";
+      listeHTML.appendChild(li);
+      totalTodos++;
+      updateCounters();
+
+
+
+    };
+
+    const addInLocalStorage =()=>{
+      localStorage.setItem(counterAdd+"",inputTodo.value)
+      counterAdd++;
+    }
+  
+
+    const updateCounters = () => {
+      totalCounter.innerText = totalTodos;
+    };
+
+    const deleteTodo = (e) => {
+      e.target.parentNode.remove();
+    };
+    const etatTodo = (e) =>{
+        let saveBtn =e.target.parentNode.querySelector("#edit")
+        let deleteBtn=e.target.parentNode.querySelector("#delete")
+        if(e.target.checked)
+        {
+           e.target.parentNode.querySelector(".inputTodo").style.textDecoration="line-through";
+           saveBtn.style.display="none";
+           deleteBtn.style.display="none";
+        }
+        else{
+            e.target.parentNode.querySelector(".inputTodo").style.textDecoration="none";
+            saveBtn.style.display="inline-block";
+            deleteBtn.style.display="inline-block";
+        }
+    }
+    const editTodo = (e) =>{
+           let inputTodo=e.target.parentNode.querySelector(".inputTodo");
+           let saveBtn=e.target.parentNode.querySelector("#edit");
+           if(inputTodo.readOnly== true){
+            inputTodo.readOnly=false;
+            inputTodo.style.border="2px solid black"
+            saveBtn.innerText="save";}
+           else{
+           inputTodo.readOnly=true;
+           inputTodo.style.border="none"
+           saveBtn.innerText="edit";
+
+          }
+    }
+
+
+    window.onload=function(){
+    while(localStorage.getItem(counterAdd+"")!=null){
+      addTodo(localStorage.getItem(counterAdd+""),false)
+      counterAdd++
+    }
+
+    }
+  
+  </script>
+</html>
